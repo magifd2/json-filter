@@ -1,5 +1,5 @@
 # Define the application name and source file
-APP_NAME=json-filter-cli
+APP_NAME=json-filter
 SRC_FILE=main.go
 
 # Define build paths
@@ -38,15 +38,26 @@ build:
 cross-compile: clean
 	@echo "Building binaries for all platforms..."
 	@mkdir -p $(BIN_DIR)
-	@for platform in $(ALL_PLATFORMS); do \
-		os=$$(echo $$platform | cut -d'/' -f1); \
-		arch=$$(echo $$platform | cut -d'/' -f2); \
-		echo "  -> Building for $$os/$$arch..."; \
-		GOOS=$$os GOARCH=$$arch go build $(LDFLAGS) -o $(BIN_DIR)/$$os/$$arch/$(APP_NAME); \
-	done
+	# macOS builds
+	@echo "  -> Building for darwin/amd64..."
+	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o $(BIN_DIR)/darwin/amd64/$(APP_NAME) ./...
+	@echo "  -> Building for darwin/arm64..."
+	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o $(BIN_DIR)/darwin/arm64/$(APP_NAME) ./...
+	# Linux build
+	@echo "  -> Building for linux/amd64..."
+	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o $(BIN_DIR)/linux/amd64/$(APP_NAME) ./...
+	# Windows build
+	@echo "  -> Building for windows/amd64..."
+	GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o $(BIN_DIR)/windows/amd64/$(APP_NAME).exe ./...
 
 # Create a macOS universal binary
-universal-mac: cross-compile
+universal-mac: 
+	@echo "Building macOS universal binary..."
+	@mkdir -p $(BIN_DIR)/darwin/amd64 $(BIN_DIR)/darwin/arm64
+	@echo "  -> Building for darwin/amd64..."
+	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o $(BIN_DIR)/darwin/amd64/$(APP_NAME) ./...
+	@echo "  -> Building for darwin/arm64..."
+	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o $(BIN_DIR)/darwin/arm64/$(APP_NAME) ./...
 	@echo "Creating macOS universal binary..."
 	@lipo -create -output $(BIN_DIR)/darwin/$(APP_NAME) $(BIN_DIR)/darwin/amd64/$(APP_NAME) $(BIN_DIR)/darwin/arm64/$(APP_NAME)
 	@echo "Universal binary for macOS created at $(BIN_DIR)/darwin/$(APP_NAME)"
