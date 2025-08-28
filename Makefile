@@ -4,7 +4,7 @@ SRC_FILE=main.go
 
 # Define build paths
 BIN_DIR=bin
-RELEASE_DIR=$(BIN_DIR)/release
+RELEASE_DIR=$(BIN_DIR)
 TMP_DIR=tmp
 
 # Define the platforms for cross-compilation
