@@ -68,10 +68,14 @@ clean:
 	@rm -rf $(BIN_DIR) $(RELEASE_DIR) $(TMP_DIR)
 
 # Create a distributable package
-release: clean universal-mac
+release: clean cross-compile
 	@echo "Creating release packages..."
 	@mkdir -p $(RELEASE_DIR)
 	
+	# Create macOS universal binary for release
+	@echo "  -> Creating macOS universal binary for release..."
+	@lipo -create -output $(BIN_DIR)/darwin/$(APP_NAME) $(BIN_DIR)/darwin/amd64/$(APP_NAME) $(BIN_DIR)/darwin/arm64/$(APP_NAME)
+
 	# Package for macOS
 	@echo "  -> Packaging for macOS..."
 	@tar -czf $(RELEASE_DIR)/$(APP_NAME)_$(VERSION)_darwin_universal.tar.gz -C $(BIN_DIR)/darwin $(APP_NAME)
