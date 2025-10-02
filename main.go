@@ -18,14 +18,21 @@ var (
 	date    = "unknown"
 )
 
-// fixIncompleteJSON attempts to fix a JSON string by adding missing closing braces.
+// fixIncompleteJSON attempts to fix a JSON string by adding missing closing braces or brackets.
 func fixIncompleteJSON(s string) string {
-	openBraces := strings.Count(s, "{")
-	closeBraces := strings.Count(s, "}")
-	missingBraces := openBraces - closeBraces
-
-	if missingBraces > 0 {
-		return s + strings.Repeat("}", missingBraces)
+	trimmedS := strings.TrimSpace(s)
+	if strings.HasPrefix(trimmedS, "{") {
+		openCount := strings.Count(s, "{")
+		closeCount := strings.Count(s, "}")
+		if openCount > closeCount {
+			return s + strings.Repeat("}", openCount-closeCount)
+		}
+	} else if strings.HasPrefix(trimmedS, "[") {
+		openCount := strings.Count(s, "[")
+		closeCount := strings.Count(s, "]")
+		if openCount > closeCount {
+			return s + strings.Repeat("]", openCount-closeCount)
+		}
 	}
 	return ""
 }
@@ -47,8 +54,8 @@ func processInput() (string, error) {
 // extractAndValidateJSON extracts a JSON string from the input and validates it.
 // It also attempts to fix common parsing errors like missing closing braces.
 func extractAndValidateJSON(input string) (string, error) {
-	// Define a regular expression to find a JSON object.
-	re := regexp.MustCompile(`(?s)({.*})`)
+	// Define a regular expression to find a JSON object or array.
+	re := regexp.MustCompile(`(?s)({.*}|\[.*\])`)
 
 	// Find the first match of the JSON pattern.
 	match := re.FindStringSubmatch(input)

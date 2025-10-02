@@ -4,9 +4,9 @@
 
 ## Features
 
--   **Intelligent JSON Extraction**: Automatically identifies and extracts JSON objects embedded within larger text streams or logs using a robust regular expression.
+-   **Intelligent JSON Extraction**: Automatically identifies and extracts JSON objects or arrays embedded within larger text streams or logs using a robust regular expression.
 -   **Automatic Prettification**: Valid JSON is automatically formatted with proper indentation for enhanced readability.
--   **Incomplete JSON Recovery**: Attempts to repair malformed or truncated JSON by intelligently adding missing closing braces (`}`). This is particularly useful when dealing with partial JSON outputs.
+-   **Incomplete JSON Recovery**: Attempts to repair malformed or truncated JSON by intelligently adding missing closing braces (`}`) or brackets (`]`). This is particularly useful when dealing with partial JSON outputs.
 -   **Bypass Mode**: A `--bypass` flag allows the original input to be passed through to standard output if JSON extraction or parsing fails, preventing pipeline interruptions.
 -   **Version Information**: Supports a `--version` flag to display the tool's version, commit hash, and build date.
 
@@ -66,6 +66,23 @@ echo '{"data": {"item": "value"'
 #     "item": "value"
 #   }
 # }
+```
+
+**Handling JSON Array:**
+
+```bash
+echo '[{"id": 1, "name": "foo"}, {"id": 2, "name": "bar"}]' | json-filter
+# Output:
+# [
+#   {
+#     "id": 1,
+#     "name": "foo"
+#   },
+#   {
+#     "id": 2,
+#     "name": "bar"
+#   }
+# ]
 ```
 
 **Using with `curl`:**
